@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "625007483029",
+    "project_id": "projetoaula-f876f",
+    "storage_bucket": "projetoaula-f876f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625007483029:android:544e224d22013ee864e39c",
+        "android_client_info": {
+          "package_name": "com.example.projetoaula"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACspEGThpBI8DUJ4VQuOAs33oODlJSi10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
