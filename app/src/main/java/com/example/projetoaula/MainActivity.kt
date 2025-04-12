@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.projetoaula.ui.theme.ProjetoAulaTheme
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +49,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppAula() {
+
+    val focusRequester = remember { FocusRequester() }
+    val context = LocalContext.current
+    var nome by remember { mutableStateOf("") }
+
+    var endereco by rememberSaveable { mutableStateOf("") }
+    var bairro by rememberSaveable { mutableStateOf("") }
+    var cep by rememberSaveable { mutableStateOf("") }
+    var cidade by rememberSaveable { mutableStateOf("") }
+    var estado by rememberSaveable { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+
+    var dadosCadastrados by remember { mutableStateOf<Map<String, String>?>(null) }
+
     //Coluna
     Column(
         Modifier
@@ -183,12 +198,46 @@ fun AppAula() {
             Column(
 
             ) {
-               Button(onClick = {val db = Firebase.firestore
-                   val user = hashMapOf(
-                       "first" to "Ada",
-                       "last" to "Lovelace",
-                       "born" to 1815
-                   )
+               Button(onClick = {
+                val db = Firebase.firestore
+                   if (nome.isBlank() || endereco.isBlank() || bairro.isBlank() || cep.isBlank() || cidade.isBlank() || estado.isBlank()) {
+                    Log.w(TAG, "Campos vazios. Cadastro não realizado.")
+                    showToast(context, "Por favor, preencha todos os campos.")
+
+                    return@Button
+                }
+
+                val user = hashMapOf(
+                    "nome" to nome,
+                    "endereco" to endereco,
+                    "bairro" to bairro,
+                    "cep" to cep,
+                    "cidade" to cidade,
+                    "estado" to estado
+                )
+
+                // Add a new document with a generated ID
+                db.collection("users")
+                    .add(user)
+                    .addOnSuccessListener { documentReference ->
+                        showToast(context, "Dados cadastrados com sucesso!")
+                    }
+                    .addOnFailureListener { e ->
+                        showToast(context, "Erro ao cadastrar. Tente novamente.")
+                    }
+
+                dadosCadastrados = user.mapValues { it.value.toString() }
+
+                coroutineScope.launch {
+                    nome = ""
+                    endereco = ""
+                    bairro = ""
+                    cep = ""
+                    estado = ""
+                    cidade = ""
+                }
+                focusRequester.requestFocus()
+            })
 
                    // Add a new document with a generated ID
                    db.collection("users")
@@ -199,12 +248,15 @@ fun AppAula() {
                        .addOnFailureListener { e ->
                            Log.w(TAG, "Error adding document", e)
                        }
+            
+                       
                }
 
             }
         }
     }
 }
+
 
 @Preview
 @Composable
